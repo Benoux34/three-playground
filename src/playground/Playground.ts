@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import Debug from "./utils/Debug";
 import Sizes from "./utils/Sizes";
 import Time from "./utils/Time";
 import Camera from "./Camera";
@@ -11,6 +12,7 @@ let instance: Playground | null = null;
 
 export default class Playground {
   canvas!: HTMLCanvasElement | OffscreenCanvas | undefined;
+  debug!: Debug;
   sizes!: Sizes;
   time!: Time;
   scene!: THREE.Scene;
@@ -31,6 +33,7 @@ export default class Playground {
     this.canvas = canvas;
 
     // Setup
+    this.debug = new Debug();
     this.sizes = new Sizes();
     this.time = new Time();
     this.scene = new THREE.Scene();
@@ -60,5 +63,33 @@ export default class Playground {
   update() {
     this.camera.update();
     this.renderer.update();
+  }
+
+  destroy() {
+    this.sizes.off("resize");
+    this.time.off("tick");
+
+    // Traverse the whole scene
+    this.scene.traverse((child) => {
+      // Test if it's a mesh
+      if (child instanceof THREE.Mesh) {
+        child.geometry.dispose();
+
+        // Loop through the material properties
+        for (const key in child.material) {
+          const value = child.material[key];
+
+          // Test if there is a dispose function
+          if (value && typeof value.dispose === "function") {
+            value.dispose();
+          }
+        }
+      }
+    });
+
+    this.camera.controls.dispose();
+    this.renderer.instance.dispose();
+
+    if (this.debug.active) this.debug.ui.destroy();
   }
 }

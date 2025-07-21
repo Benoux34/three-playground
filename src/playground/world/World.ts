@@ -1,13 +1,15 @@
 import * as THREE from "three";
 import Playground from "../Playground";
-import Environment from "./Environment";
 import Resources from "../utils/Resources";
+import Floor from "./Floor";
+import Environment from "./Environment";
 
 export default class World {
   playground: Playground;
   scene: THREE.Scene;
-  environment!: Environment;
   resources: Resources;
+  floor!: Floor;
+  environment!: Environment;
 
   constructor() {
     this.playground = window.playground!;
@@ -16,13 +18,8 @@ export default class World {
 
     // Wait for resources
     this.resources.on("ready", () => {
+      this.floor = new Floor();
       this.environment = new Environment();
     });
-
-    const testMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial()
-    );
-    this.scene.add(testMesh);
   }
 }
