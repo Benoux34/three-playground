@@ -1,13 +1,20 @@
 import RAPIER from "@dimforge/rapier3d";
+import Playground from "../Playground";
+import Keyboard from "../utils/Keyboard";
 import Floor from "./Floor";
 import Test from "./Test";
 import { getMeshSize } from "../utils/getMeshSize";
 
 export default class Physics {
+  playground: Playground;
+  keyboard: Keyboard;
   world!: RAPIER.World;
   cubeRigidBody!: RAPIER.RigidBody;
 
   constructor(private floor: Floor, private cube: Test) {
+    this.playground = window.playground!;
+    this.keyboard = this.playground.keyboard;
+
     this.world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
 
     this.createFloorCollider();
@@ -29,7 +36,6 @@ export default class Physics {
 
   private createCubeBody() {
     const pos = this.cube.mesh.position;
-    const size = getMeshSize(this.cube.mesh);
 
     const cubeRigidBodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(
       pos.x,
@@ -38,12 +44,30 @@ export default class Physics {
     );
     this.cubeRigidBody = this.world.createRigidBody(cubeRigidBodyDesc);
 
-    const colliderDesc = RAPIER.ColliderDesc.cuboid(size.x, size.y, size.z);
+    const colliderDesc = RAPIER.ColliderDesc.ball(0.5);
     this.world.createCollider(colliderDesc, this.cubeRigidBody);
+  }
+
+  private setControls() {
+    const torqueStrength = 0.03;
+    let torque = { x: 0, y: 0, z: 0 };
+
+    if (this.keyboard.isPressed("KeyW")) torque.x -= torqueStrength;
+    if (this.keyboard.isPressed("KeyS")) torque.x += torqueStrength;
+    if (this.keyboard.isPressed("KeyA")) torque.z += torqueStrength;
+    if (this.keyboard.isPressed("KeyD")) torque.z -= torqueStrength;
+
+    this.cubeRigidBody.addTorque(torque, true);
+
+    this.keyboard.on("keyup", () => {
+      this.cubeRigidBody.resetTorques(true);
+    });
   }
 
   update() {
     this.world.step();
+
+    this.setControls();
 
     if (this.cubeRigidBody) {
       const pos = this.cubeRigidBody.translation();

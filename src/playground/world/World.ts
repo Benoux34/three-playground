@@ -5,11 +5,13 @@ import Floor from "./Floor";
 import Environment from "./Environment";
 import Physics from "./Physics";
 import Test from "./Test";
+import Keyboard from "../utils/Keyboard";
 
 export default class World {
   playground: Playground;
   scene: THREE.Scene;
   resources: Resources;
+  keyboard: Keyboard;
   floor!: Floor;
   environment!: Environment;
   cube!: Test;
@@ -19,6 +21,7 @@ export default class World {
     this.playground = window.playground!;
     this.scene = this.playground.scene;
     this.resources = this.playground.resources;
+    this.keyboard = this.playground.keyboard;
 
     // Wait for resources
     this.resources.on("ready", () => {

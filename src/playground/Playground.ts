@@ -7,6 +7,7 @@ import Renderer from "./Renderer";
 import World from "./world/World";
 import Resources from "./utils/Resources";
 import sources from "./sources";
+import Keyboard from "./utils/Keyboard";
 
 let instance: Playground | null = null;
 
@@ -18,6 +19,7 @@ export default class Playground {
   scene!: THREE.Scene;
   resources!: Resources;
   camera!: Camera;
+  keyboard!: Keyboard;
   renderer!: Renderer;
   world!: World;
 
@@ -39,6 +41,7 @@ export default class Playground {
     this.scene = new THREE.Scene();
     this.resources = new Resources(sources);
     this.camera = new Camera();
+    this.keyboard = new Keyboard();
 
     this.renderer = new Renderer();
 
