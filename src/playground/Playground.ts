@@ -63,6 +63,7 @@ export default class Playground {
   update() {
     this.camera.update();
     this.renderer.update();
+    this.world.update();
   }
 
   destroy() {

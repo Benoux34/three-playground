@@ -15,7 +15,7 @@ export default class Camera {
     this.playground = window.playground!;
     this.sizes = this.playground.sizes;
     this.scene = this.playground.scene;
-    this.canvas = this.playground.canvas;
+    this.canvas = this.playground.canvas as HTMLCanvasElement | null;
 
     this.setInstance();
     this.setControls();
